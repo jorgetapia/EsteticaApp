@@ -1,0 +1,101 @@
+﻿@model IEnumerable<EsteticaApp.Models.Cita>
+
+@{
+    ViewData["Title"] = "Agenda de Citas - Estética Belleza & Estilo";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Agenda de Citas Programadas</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">← Volver al Panel Principal</a>
+    </div>
+
+    <div class="row">
+        <!-- Formulario para Agendar Nueva Cita -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5 class="card-title text-primary">Agendar Nueva Cita</h5>
+                <hr />
+                <form asp-action="AgendarCita" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">ID / Nombre Cliente</label>
+                        <input type="text" name="nombreCliente" class="form-control" placeholder="Ej. Laura Gómez" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Estilista</label>
+                        <select name="idEstilista" class="form-select" required>
+                            <option value="1">Sofía Ramírez (40% Com.)</option>
+                            <option value="2">Carlos Mendoza (35% Com.)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Servicio</label>
+                        <select name="idServicio" class="form-select" required>
+                            <option value="1">Corte Estilizado ($250.00)</option>
+                            <option value="2">Tinte Completo ($850.00)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha y Hora</label>
+                        <input type="datetime-local" name="fechaHora" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Agendar Cita</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla de Citas Agendadas -->
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3">
+                <h5 class="card-title">Citas Registradas</h5>
+                <hr />
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info">No hay citas agendadas por el momento.</div>
+                }
+                else
+                {
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th># Cita</th>
+                                <th>Fecha / Hora</th>
+                                <th>Cliente</th>
+                                <th>Servicio</th>
+                                <th>Estilista</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cita in Model)
+                            {
+                                <tr>
+                                    <td><code>#@cita.IdCita</code></td>
+                                    <td>@cita.FechaHora.ToString("dd/MM/yyyy hh:mm tt")</td>
+                                    <td>@cita.Cliente.Nombre</td>
+                                    <td>@cita.Servicio.Nombre</td>
+                                    <td>@cita.EstilistaAsignado.Nombre</td>
+                                    <td>
+                                        <span class="badge @(cita.Estado == "Programada" ? "bg-info" : cita.Estado == "EnEspera" ? "bg-warning" : "bg-success") text-dark">
+                                            @cita.Estado
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (cita.Estado == "Programada")
+                                        {
+                                            <form asp-action="RegistrarLlegada" method="post" class="d-inline">
+                                                <input type="hidden" name="idCita" value="@cita.IdCita" />
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">Mandar a Espera</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<EsteticaApp.Models.Cita>
+
+@{
+    ViewData["Title"] = "Gestión de Estética";
+}
+
+<div class="container mt-4">
+    <h2>Panel Operativo - Estética Belleza & Estilo</h2>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">@TempData["Mensaje"]</div>
+    }
+
+    <div class="row my-3">
+        <div class="col-md-6">
+            <div class="card p-3 bg-light">
+                <h5>Clientes en Espera</h5>
+                <h3><span class="badge bg-primary">@ViewBag.TotalEnEspera</span></h3>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3 bg-light">
+                <h5>Total Caja Día</h5>
+                <h3><span class="badge bg-success">$@ViewBag.IngresosDia.ToString("N2")</span></h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-3">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>Sala de Espera (Queue FIFO)</h4>
+            <form asp-action="AtenderSiguiente" method="post">
+                <button type="submit" class="btn btn-warning">Atender Siguiente (Dequeue)</button>
+            </form>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th># Cita</th>
+                    <th>Cliente</th>
+                    <th>Servicio</th>
+                    <th>Estilista</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cita in Model)
+                {
+                    <tr>
+                        <td>#@cita.IdCita</td>
+                        <td>@cita.Cliente.Nombre</td>
+                        <td>@cita.Servicio.Nombre ($@cita.Servicio.Precio)</td>
+                        <td>@cita.EstilistaAsignado.Nombre</td>
+                        <td>
+                            <form asp-action="Cobrar" method="post" class="d-inline">
+                                <input type="hidden" name="idCita" value="@cita.IdCita" />
+                                <select name="metodoPago" class="form-select form-select-sm d-inline w-auto">
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta">Tarjeta</option>
+                                </select>
+                                <button type="submit" class="btn btn-success btn-sm">Cobrar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

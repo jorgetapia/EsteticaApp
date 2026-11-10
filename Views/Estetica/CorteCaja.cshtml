@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Corte de Caja Diario - Estética Belleza & Estilo";
+    var comisiones = ViewBag.ComisionesPorEstilista as Dictionary<string, decimal> ?? new Dictionary<string, decimal>();
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Corte de Caja y Reporte de Comisiones</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">← Volver al Panel Principal</a>
+    </div>
+
+    <!-- Métricas Financieras -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white p-3 shadow-sm">
+                <h6>Ingresos Totales del Día</h6>
+                <h2 class="mb-0">$@ViewBag.IngresosDia.ToString("N2")</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white p-3 shadow-sm">
+                <h6>Total Pagado a Estilistas (Comisiones)</h6>
+                <h2 class="mb-0">$@ViewBag.TotalComisiones.ToString("N2")</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark text-white p-3 shadow-sm">
+                <h6>Ganancia Neta Estética</h6>
+                <h2 class="mb-0">$@((ViewBag.IngresosDia - ViewBag.TotalComisiones).ToString("N2"))</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla Desglose por Estilista -->
+    <div class="card shadow-sm p-3">
+        <h5 class="card-title">Desglose de Comisiones por Estilista</h5>
+        <p class="text-muted small">Cálculo basado en las reglas de comisión específicas por tipo de servicio (Polimorfismo POO).</p>
+        <hr />
+
+        @if (!comisiones.Any())
+        {
+            <div class="alert alert-warning">Aún no se han cobrado servicios durante la jornada de hoy.</div>
+        }
+        else
+        {
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Estilista</th>
+                        <th class="text-end">Total Comisión a Pagar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var kvp in comisiones)
+                    {
+                        <tr>
+                            <td><strong>@kvp.Key</strong></td>
+                            <td class="text-end text-success fw-bold">$@kvp.Value.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
